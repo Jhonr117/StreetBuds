@@ -15,9 +15,9 @@ public class GamePanel extends JPanel implements ActionListener, Serializable {
     private boolean[] keys;              // Estado de las teclas presionadas
     private Level currentLevel;          // Nivel actual del juego
     private GameState gameState;         // Estado actual del juego
-    private int score;                  // Puntuación del juego
-    private int lives;                  // Vidas del jugador
-    private long startTime;             // Tiempo de inicio del juego
+    private int score;                   // Puntuación del juego
+    private int lives;                   // Vidas del jugador
+    private long startTime;              // Tiempo de inicio del juego
     private ParticleSystem particleSystem; // Sistema de partículas del juego
     private boolean isPaused;            // Estado de pausa del juego
     private Font gameFont;               // Fuente del juego
@@ -29,40 +29,40 @@ public class GamePanel extends JPanel implements ActionListener, Serializable {
     public GamePanel() {
         super();
         // Inicialización de variables
-        this.keys = new boolean[256];
-        this.player = new Player(100, 400);
-        this.gameState = GameState.MENU;
-        this.score = 0;
-        this.lives = 3;
-        this.particleSystem = new ParticleSystem();
-        this.isPaused = false;
-        this.gameFont = new Font("Arial", Font.BOLD, 24);
+        this.keys = new boolean[256]; // Array para rastrear el estado de las teclas
+        this.player = new Player(100, 400); // Crear el jugador en una posición inicial
+        this.gameState = GameState.MENU; // El juego comienza en el menú principal
+        this.score = 0; // Puntuación inicial
+        this.lives = 3; // Vidas iniciales del jugador
+        this.particleSystem = new ParticleSystem(); // Inicializar el sistema de partículas
+        this.isPaused = false; // El juego no está pausado al inicio
+        this.gameFont = new Font("Arial", Font.BOLD, 24); // Fuente para el texto del juego
 
         // Configuración del panel
-        setPreferredSize(new Dimension(800, 600));
-        setFocusable(true);
-        setBackground(Color.BLACK);
+        setPreferredSize(new Dimension(800, 600)); // Tamaño del panel
+        setFocusable(true); // Permitir que el panel reciba eventos de teclado
+        setBackground(Color.BLACK); // Fondo negro para el panel
         
         // Configuración del sistema de input
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                keys[e.getKeyCode()] = true;
+                keys[e.getKeyCode()] = true; // Marcar la tecla como presionada
                 if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-                    togglePause();
+                    togglePause(); // Alternar el estado de pausa si se presiona ESC
                 }
             }
 
             @Override
             public void keyReleased(KeyEvent e) {
-                keys[e.getKeyCode()] = false;
+                keys[e.getKeyCode()] = false; // Marcar la tecla como liberada
             }
         });
 
         // Inicialización del bucle del juego
-        timer = new Timer(DELAY, this);
-        timer.start();
-        startTime = System.currentTimeMillis();
+        timer = new Timer(DELAY, this); // Crear un temporizador con el retraso especificado
+        timer.start(); // Iniciar el temporizador
+        startTime = System.currentTimeMillis(); // Registrar el tiempo de inicio del juego
     }
 
     /**
@@ -74,27 +74,29 @@ public class GamePanel extends JPanel implements ActionListener, Serializable {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
         
+        // Dibujar diferentes pantallas según el estado del juego
         switch (gameState) {
             case MENU:
-                drawMenu(g2d);
+                drawMenu(g2d); // Dibujar el menú principal
                 break;
             case PLAYING:
-                drawGame(g2d);
+                drawGame(g2d); // Dibujar el juego en curso
                 break;
             case PAUSED:
-                drawGame(g2d);
-                drawPauseScreen(g2d);
+                drawGame(g2d); // Dibujar el juego en curso
+                drawPauseScreen(g2d); // Superponer la pantalla de pausa
                 break;
             case GAME_OVER:
-                drawGameOver(g2d);
+                drawGameOver(g2d); // Dibujar la pantalla de fin de juego
                 break;
             case LEVEL_COMPLETE:
-                drawLevelComplete(g2d);
+                drawLevelComplete(g2d); // Dibujar la pantalla de nivel completado
                 break;
         }
     }
 
     private void drawMenu(Graphics2D g2d) {
+        // Dibujar el título y las instrucciones del menú principal
         g2d.setColor(Color.WHITE);
         g2d.setFont(gameFont.deriveFont(48f));
         g2d.drawString("Street Buds", 250, 200);
@@ -103,25 +105,27 @@ public class GamePanel extends JPanel implements ActionListener, Serializable {
     }
 
     private void drawGame(Graphics2D g2d) {
+        // Dibujar el nivel actual, el jugador y el sistema de partículas
         if (currentLevel != null) {
             currentLevel.draw(g2d);
         }
         player.draw(g2d);
         particleSystem.draw(g2d);
 
-        // Dibujar HUD
+        // Dibujar el HUD (puntuación, vidas y tiempo restante)
         g2d.setColor(Color.WHITE);
         g2d.setFont(gameFont);
         g2d.drawString("Puntuación: " + score, 20, 30);
         g2d.drawString("Vidas: " + lives, 20, 60);
         
         long currentTime = System.currentTimeMillis();
-        long elapsedTime = (currentTime - startTime) / 1000;
+        long elapsedTime = (currentTime - startTime) / 1000; // Tiempo transcurrido en segundos
         long remainingTime = currentLevel != null ? currentLevel.getTimeLimit() - elapsedTime : 0;
         g2d.drawString("Tiempo: " + remainingTime, 20, 90);
     }
 
     private void drawPauseScreen(Graphics2D g2d) {
+        // Dibujar una superposición semitransparente para la pausa
         g2d.setColor(new Color(0, 0, 0, 150));
         g2d.fillRect(0, 0, getWidth(), getHeight());
         g2d.setColor(Color.WHITE);
@@ -132,6 +136,7 @@ public class GamePanel extends JPanel implements ActionListener, Serializable {
     }
 
     private void drawGameOver(Graphics2D g2d) {
+        // Dibujar la pantalla de fin de juego
         g2d.setColor(new Color(0, 0, 0, 200));
         g2d.fillRect(0, 0, getWidth(), getHeight());
         g2d.setColor(Color.WHITE);
@@ -143,6 +148,7 @@ public class GamePanel extends JPanel implements ActionListener, Serializable {
     }
 
     private void drawLevelComplete(Graphics2D g2d) {
+        // Dibujar la pantalla de nivel completado
         g2d.setColor(new Color(0, 0, 0, 200));
         g2d.fillRect(0, 0, getWidth(), getHeight());
         g2d.setColor(Color.WHITE);
@@ -160,9 +166,9 @@ public class GamePanel extends JPanel implements ActionListener, Serializable {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (!isPaused && gameState == GameState.PLAYING) {
-            update();
+            update(); // Actualizar la lógica del juego
         }
-        repaint();
+        repaint(); // Redibujar el panel
     }
 
     /**
@@ -171,26 +177,25 @@ public class GamePanel extends JPanel implements ActionListener, Serializable {
      */
     private void update() {
         if (currentLevel != null) {
-            currentLevel.update();
-            player.update(keys, currentLevel.getPlatforms());
+            currentLevel.update(); // Actualizar el nivel actual
+            player.update(keys, currentLevel.getPlatforms()); // Actualizar el jugador
             
             // Verificar colisiones con enemigos
             for (Enemy enemy : currentLevel.getEnemies()) {
                 if (enemy.isAlive() && player.getBounds().intersects(enemy.getBounds())) {
-                    // Verificar si el jugador está atacando (saltando sobre el enemigo)
+                    // Si el jugador está atacando (saltando sobre el enemigo)
                     if (player.isAttacking() && player.getBounds().getY() < enemy.getBounds().getY()) {
-                        enemy.takeDamage(1, true);
-                        // Rebote del jugador
-                        player.jump();
-                        score += 100; // Puntos por derrotar un enemigo
+                        enemy.takeDamage(1, true); // El enemigo recibe daño y muere
+                        player.jump(); // El jugador rebota
+                        score += 100; // Incrementar la puntuación
                     } else if (!enemy.isStunned()) {
-                        player.takeDamage(enemy.getDamage());
+                        player.takeDamage(enemy.getDamage()); // El jugador recibe daño
                         if (player.getHealth() <= 0) {
-                            lives--;
+                            lives--; // Reducir vidas
                             if (lives <= 0) {
-                                gameState = GameState.GAME_OVER;
+                                gameState = GameState.GAME_OVER; // Fin del juego
                             } else {
-                                player.respawn();
+                                player.respawn(); // Reaparecer al jugador
                             }
                         }
                     }
@@ -200,36 +205,36 @@ public class GamePanel extends JPanel implements ActionListener, Serializable {
             // Verificar coleccionables
             for (Collectible collectible : currentLevel.getCollectibles()) {
                 if (!collectible.isCollected() && player.getBounds().intersects(collectible.getBounds())) {
-                    collectible.collect();
-                    score += collectible.getValue();
+                    collectible.collect(); // Marcar el coleccionable como recogido
+                    score += collectible.getValue(); // Incrementar la puntuación
                     particleSystem.createExplosion(
                         (int)collectible.getBounds().getCenterX(),
                         (int)collectible.getBounds().getCenterY(),
                         20,
                         Color.YELLOW
-                    );
+                    ); // Crear una explosión de partículas
                 }
             }
 
             // Verificar si se completó el nivel
             if (score >= currentLevel.getScoreToComplete()) {
-                gameState = GameState.LEVEL_COMPLETE;
+                gameState = GameState.LEVEL_COMPLETE; // Cambiar el estado del juego
             }
         }
     }
 
     public void setCurrentLevel(Level level) {
-        this.currentLevel = level;
-        this.gameState = GameState.PLAYING;
-        this.startTime = System.currentTimeMillis();
+        this.currentLevel = level; // Establecer el nivel actual
+        this.gameState = GameState.PLAYING; // Cambiar el estado del juego a "jugando"
+        this.startTime = System.currentTimeMillis(); // Registrar el tiempo de inicio
     }
 
     private void togglePause() {
-        isPaused = !isPaused;
+        isPaused = !isPaused; // Alternar el estado de pausa
         if (isPaused) {
-            timer.stop();
+            timer.stop(); // Detener el temporizador si está pausado
         } else {
-            timer.start();
+            timer.start(); // Reiniciar el temporizador si no está pausado
         }
     }
 }
